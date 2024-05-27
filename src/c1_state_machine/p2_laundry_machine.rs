@@ -40,7 +40,75 @@ impl StateMachine for ClothesMachine {
     type Transition = ClothesAction;
 
     fn next_state(starting_state: &ClothesState, t: &ClothesAction) -> ClothesState {
-        todo!("Exercise 3")
+        match *t {
+            ClothesAction::Wear => {
+                match *starting_state {
+                    ClothesState::Clean(n) => {
+                        if n > 2 {
+                            return ClothesState::Dirty(n - 1);
+                        }
+                        return ClothesState::Tattered;
+                    },
+                    ClothesState::Dirty(n) => {
+                        if n == 1{
+                            return ClothesState::Tattered;
+                        }
+                        ClothesState::Dirty(n - 1)
+                    },
+                    ClothesState::Wet(n) => {
+                        if n == 1 {
+                            return ClothesState::Tattered;
+                        }
+                        ClothesState::Dirty(n - 1)
+                    },
+                    ClothesState::Tattered => ClothesState::Tattered,
+                }
+            },
+            ClothesAction::Wash => {
+                match *starting_state {
+                    ClothesState::Clean(n) => {
+                        if n > 2 {
+                            return ClothesState::Wet(n - 1);
+                        }
+                        return ClothesState::Tattered;
+                    },
+                    ClothesState::Dirty(n) => {
+                        if n > 1 {
+                            return ClothesState::Wet(n - 1);
+                        }
+                        return ClothesState::Tattered;
+                    },
+                    ClothesState::Wet(n) => {
+                        if n == 1 {
+                            return ClothesState::Tattered;
+                        }
+                        return ClothesState::Wet(n - 1)
+                    },
+                    ClothesState::Tattered => ClothesState::Tattered,
+                }
+            },
+            ClothesAction::Dry => match *starting_state {
+                ClothesState::Clean(n) => {
+                    if n > 1 {
+                        return ClothesState::Clean(n - 1);
+                    }
+                    return ClothesState::Tattered;
+                },
+                ClothesState::Dirty(n) => {
+                    if n > 1 {
+                        return ClothesState::Dirty(n - 1);
+                    }
+                    return ClothesState::Tattered;
+                },
+                ClothesState::Wet(n) => {
+                    if n == 1 {
+                        return ClothesState::Tattered;
+                    }
+                    return ClothesState::Clean(n - 1)
+                },
+                ClothesState::Tattered => ClothesState::Tattered,
+            },
+        }
     }
 }
 
